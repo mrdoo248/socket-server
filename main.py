@@ -2,21 +2,20 @@ from flask import Flask
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
-# ⚡️ cors_allowed_origins="*" يسمح لأي دومين بالاتصال
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-@socketio.on('connect')
-def handle_connect():
-    print("✅ Client connected")
+@app.route("/")
+def home():
+    return "SERVER OK"   # ← هذا يمنع 404
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    print("❌ Client disconnected")
+@socketio.on("connect")
+def connect():
+    print("✅ CLIENT CONNECTED")
 
-@socketio.on('cmd')
-def handle_cmd(data):
-    print("📥 CMD received:", data)
-    socketio.emit('cmd', data)
+@socketio.on("cmd")
+def cmd(data):
+    print("📥 CMD:", data)
+    socketio.emit("cmd", data)
 
-if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=3000, debug=True, use_reloader=False)
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=3000, allow_unsafe_werkzeug=True)
