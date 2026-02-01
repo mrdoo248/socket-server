@@ -4,18 +4,22 @@ from flask_socketio import SocketIO
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-@app.route("/")
-def home():
-    return "SERVER OK"   # ← هذا يمنع 404
+@app.route('/')
+def index():
+    return "SERVER OK ✅"
 
-@socketio.on("connect")
-def connect():
-    print("✅ CLIENT CONNECTED")
+@socketio.on('connect')
+def handle_connect():
+    print("✅ Client connected")
 
-@socketio.on("cmd")
-def cmd(data):
-    print("📥 CMD:", data)
-    socketio.emit("cmd", data)
+@socketio.on('disconnect')
+def handle_disconnect():
+    print("❌ Client disconnected")
 
-if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=3000, allow_unsafe_werkzeug=True)
+@socketio.on('cmd')
+def handle_cmd(data):
+    print("📥 CMD received:", data)
+    socketio.emit('cmd', data)
+
+if __name__ == '__main__':
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True, use_reloader=False)
